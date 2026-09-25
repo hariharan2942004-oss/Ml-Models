@@ -1,0 +1,324 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "id": "T4mD1QL9Udkj",
+        "outputId": "79d78d37-d608-4846-c2cd-0068a624bea1"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Libraries imported successfully!\n"
+          ]
+        }
+      ],
+      "source": [
+        "# Import pandas to handle data tables\n",
+        "import pandas as pd\n",
+        "\n",
+        "# Import numpy for math calculations\n",
+        "import numpy as np\n",
+        "\n",
+        "# Import tools for splitting data and measuring model accuracy\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.ensemble import RandomForestRegressor\n",
+        "from sklearn.metrics import mean_squared_error, r2_score\n",
+        "\n",
+        "print(\"Libraries imported successfully!\")"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Read your CSV file into a table format (DataFrame) named 'df'\n",
+        "df = pd.read_csv('/content/test_Y3wMUE5_7gLdaTN-selected-columns python.csv')\n",
+        "\n",
+        "# Display the first 5 rows of your dataset\n",
+        "print(\"First 5 rows of your dataset:\")\n",
+        "print(df.head())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "id": "3pXSIq28u8pK",
+        "outputId": "7e6d9271-87bf-458b-8a44-62409861087a"
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "First 5 rows of your dataset:\n",
+            "    Loan_ID Gender Married Dependents     Education Self_Employed  \\\n",
+            "0  LP001015   Male     Yes          0      Graduate            No   \n",
+            "1  LP001022   Male     Yes          1      Graduate            No   \n",
+            "2  LP001031   Male     Yes          2      Graduate            No   \n",
+            "3  LP001035   Male     Yes          2      Graduate            No   \n",
+            "4  LP001051   Male      No          0  Not Graduate            No   \n",
+            "\n",
+            "   ApplicantIncome  CoapplicantIncome  LoanAmount  Loan_Amount_Term  \n",
+            "0             5720                  0       110.0             360.0  \n",
+            "1             3076               1500       126.0             360.0  \n",
+            "2             5000               1800       208.0             360.0  \n",
+            "3             2340               2546       100.0             360.0  \n",
+            "4             3276                  0        78.0             360.0  \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Fill missing text categories with the most frequent choice (mode)\n",
+        "df['Gender'].fillna(df['Gender'].mode()[0], inplace=True)\n",
+        "df['Dependents'].fillna(df['Dependents'].mode()[0], inplace=True)\n",
+        "df['Self_Employed'].fillna(df['Self_Employed'].mode()[0], inplace=True)\n",
+        "\n",
+        "# Fill missing number values (like Loan Amount) with the middle value (median)\n",
+        "df['LoanAmount'].fillna(df['LoanAmount'].median(), inplace=True)\n",
+        "df['Loan_Amount_Term'].fillna(df['Loan_Amount_Term'].median(), inplace=True)\n",
+        "\n",
+        "print(\"Missing values cleaned successfully!\")"
+      ],
+      "metadata": {
+        "id": "Udesn4ZoUvJA",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "outputId": "a6193389-40ac-4757-9f50-0f10d8a164a5"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Missing values cleaned successfully!\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipykernel_1011/76970802.py:2: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.\n",
+            "The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.\n",
+            "\n",
+            "For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.\n",
+            "\n",
+            "\n",
+            "  df['Gender'].fillna(df['Gender'].mode()[0], inplace=True)\n",
+            "/tmp/ipykernel_1011/76970802.py:3: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.\n",
+            "The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.\n",
+            "\n",
+            "For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.\n",
+            "\n",
+            "\n",
+            "  df['Dependents'].fillna(df['Dependents'].mode()[0], inplace=True)\n",
+            "/tmp/ipykernel_1011/76970802.py:4: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.\n",
+            "The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.\n",
+            "\n",
+            "For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.\n",
+            "\n",
+            "\n",
+            "  df['Self_Employed'].fillna(df['Self_Employed'].mode()[0], inplace=True)\n",
+            "/tmp/ipykernel_1011/76970802.py:7: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.\n",
+            "The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.\n",
+            "\n",
+            "For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.\n",
+            "\n",
+            "\n",
+            "  df['LoanAmount'].fillna(df['LoanAmount'].median(), inplace=True)\n",
+            "/tmp/ipykernel_1011/76970802.py:8: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.\n",
+            "The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.\n",
+            "\n",
+            "For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.\n",
+            "\n",
+            "\n",
+            "  df['Loan_Amount_Term'].fillna(df['Loan_Amount_Term'].median(), inplace=True)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Convert text columns into numeric codes\n",
+        "df['Gender'] = df['Gender'].astype('category').cat.codes\n",
+        "df['Married'] = df['Married'].astype('category').cat.codes\n",
+        "df['Dependents'] = df['Dependents'].astype('category').cat.codes\n",
+        "df['Education'] = df['Education'].astype('category').cat.codes\n",
+        "df['Self_Employed'] = df['Self_Employed'].astype('category').cat.codes\n",
+        "\n",
+        "print(\"Text categories successfully converted to numbers!\")"
+      ],
+      "metadata": {
+        "id": "RGRAhOzBUyOA",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "outputId": "5945e662-3686-45ac-be36-ce513339cbbc"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Text categories successfully converted to numbers!\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# 'X' represents the input clues (income, education, marital status, etc.)\n",
+        "X = df[['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed', 'ApplicantIncome', 'CoapplicantIncome', 'Loan_Amount_Term']]\n",
+        "\n",
+        "# 'y' represents what we want the model to predict (LoanAmount)\n",
+        "y = df['LoanAmount']\n",
+        "\n",
+        "print(\"Inputs and target variables defined!\")"
+      ],
+      "metadata": {
+        "id": "dk5j6MDUU6Xw",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "outputId": "16969663-2cc9-413e-9a2e-b6fc5452c9d9"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Inputs and target variables defined!\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Split data: 80% for training, 20% for testing\n",
+        "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n",
+        "\n",
+        "print(f\"Training rows: {X_train.shape[0]}\")\n",
+        "print(f\"Testing rows: {X_test.shape[0]}\")"
+      ],
+      "metadata": {
+        "id": "JHM9v9EqU8uw",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "outputId": "ebc8c48b-2f27-422f-ea33-f476be1128f3"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Training rows: 293\n",
+            "Testing rows: 74\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Choose the Random Forest Regressor algorithm\n",
+        "model = RandomForestRegressor(random_state=42)\n",
+        "\n",
+        "# Train the model to learn the patterns from the data\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "print(\"Model training completed successfully!\")"
+      ],
+      "metadata": {
+        "id": "H7aissIpU-8Y",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "outputId": "0357ae4f-50ad-4098-9125-1dd75a04ae47"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model training completed successfully!\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Make predictions on the test data\n",
+        "y_pred = model.predict(X_test)\n",
+        "\n",
+        "# Calculate performance metrics\n",
+        "r2 = r2_score(y_test, y_pred)\n",
+        "rmse = np.sqrt(mean_squared_error(y_test, y_pred))\n",
+        "\n",
+        "print(\"Model Performance Evaluation:\")\n",
+        "print(f\"R-squared Score (Accuracy fit): {r2:.2f}\")\n",
+        "print(f\"Root Mean Squared Error (Average error margin): {rmse:.2f}\")"
+      ],
+      "metadata": {
+        "id": "L6nN3jOgVABo",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 0
+        },
+        "outputId": "791bad25-98dc-431a-d75d-9131dcb7ba35"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model Performance Evaluation:\n",
+            "R-squared Score (Accuracy fit): 0.10\n",
+            "Root Mean Squared Error (Average error margin): 56.06\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
